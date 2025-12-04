@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>vô coi nè hương</title>
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body{
+    width:100vw; height:100vh;
+    font-family: Arial;
+    overflow:hidden;
+    position: relative;
+}
+
+/* Background trái tim rung rung */
+#bgHeart {
+    position: fixed;
+    width:100%; height:100%;
+    top:0; left:0;
+    pointer-events:none;
+    z-index:0;
+    overflow:hidden;
+}
+
+.bg-heart {
+    position: absolute;
+    font-size: 20px;
+    color:#ff4d6d;
+    animation: shake 1s infinite alternate;
+}
+
+@keyframes shake {
+    0% { transform: translate(0,0) rotate(0deg);}
+    25% { transform: translate(2px,-2px) rotate(-5deg);}
+    50% { transform: translate(-2px,2px) rotate(5deg);}
+    75% { transform: translate(2px,2px) rotate(-5deg);}
+    100% { transform: translate(-2px,-2px) rotate(5deg);}
+}
+
+/* Lời tỏ tình */
+.text-box {
+    max-width: 600px;
+    background: #ffffffaa;
+    padding: 25px;
+    border-radius: 20px;
+    text-align: center;
+    font-size: 22px;
+    color:#ff4d6d;
+    box-shadow:0 10px 25px rgba(0,0,0,0.1);
+    display:none;
+    position: relative;
+    z-index:1;
+    min-height: 200px;
+}
+
+/* Nút */
+button{
+    padding: 15px 25px;
+    font-size: 20px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:bold;
+    margin-top:15px;
+    z-index:1;
+    position: relative;
+}
+
+.start { background:#ff8fb1; color:white; }
+.next { background:#ff5fa2; color:white; display:none; }
+.yes { background:#ff5fa2; color:white; }
+.no { background:#ffd1dc; color:#ff4d6d; }
+
+.start:hover,.next:hover,.yes:hover,.no:hover { transform:scale(1.1); }
+
+/* Popup câu hỏi */
+#popup {
+    position: fixed;
+    top:50%; left:50%;
+    transform: translate(-50%,-50%);
+    width: 85%; max-width: 400px;
+    background:#fff;
+    padding:25px;
+    border-radius:20px;
+    text-align:center;
+    box-shadow:0 15px 30px rgba(0,0,0,0.25);
+    display:none;
+    animation: pop 0.35s ease-out;
+    z-index:2;
+}
+
+@keyframes pop {
+    0% { transform: translate(-50%, -50%) scale(0.6); opacity:0;}
+    100% { transform: translate(-50%, -50%) scale(1); opacity:1;}
+}
+
+/* Popup thông báo đồng ý */
+#successPopup {
+    position: fixed;
+    top:50%; left:50%;
+    transform: translate(-50%,-50%);
+    width: 80%; max-width: 400px;
+    background:#ffe6f2;
+    padding:25px;
+    border-radius:20px;
+    text-align:center;
+    box-shadow:0 15px 30px rgba(0,0,0,0.25);
+    display:none;
+    animation: pop 0.5s ease-out;
+    z-index:3;
+}
+
+/* Trái tim rơi */
+.heart {
+    position: fixed;
+    top: -10px;
+    font-size: 40px;
+    color: #ff3366;
+    animation: fall 3s linear forwards;
+    z-index:4;
+}
+
+@keyframes fall {
+    to { transform: translateY(110vh); opacity:0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Background trái tim -->
+<div id="bgHeart"></div>
+
+<!-- Bước 1: Nút bắt đầu -->
+<button class="start" id="startBtn">Bấm vô đi Hương, có bất ngờ nè!</button>
+
+<!-- Bước 2: Lời tỏ tình -->
+<div class="text-box" id="loveText">
+    <span id="loveContent"></span>
+    <button class="next" id="nextBtn">Tiếp tục ➜</button>
+</div>
+
+<!-- Bước 4: Popup cute câu hỏi -->
+<div id="popup">
+    <h2 style="color:#ff4d6d; margin-bottom:10px;">Hương ơi… 💗</h2>
+    <p style="font-size:18px; margin-bottom:20px;">
+        Cậu có đồng ý làm người yêu tớ không? 🥺👉👈
+    </p>
+
+    <button class="yes" onclick="heartRain()">Đồng ý 💖</button>
+    <button class="no" onclick="alert('Huhu 😭 chán nhỉ nhưng thui quyết định của cậu mà😁…')">Không 💔</button>
+</div>
+
+<!-- Popup thông báo đồng ý -->
+<div id="successPopup">
+    <h2 style="color:#ff4d6d;">🎉 Woohoo! Hương đồng ý rồi ❤️</h2>
+    <p style="font-size:18px; margin-top:10px;">Tớ vui lắm luôn nè 🥰</p>
+</div>
+
+<script>
+const startBtn = document.getElementById("startBtn");
+const loveText = document.getElementById("loveText");
+const loveContent = document.getElementById("loveContent");
+const nextBtn = document.getElementById("nextBtn");
+
+const loveMessage = `Hương à…
+Tớ biết nói ra điều này có hơi bất ngờ, nhưng thật lòng tớ đã thích cậu từ lâu rồi.
+Mỗi lần nói chuyện với cậu, mỗi khi thấy nụ cười của cậu, tớ lại thấy tim mình vui hơn một chút.
+
+Tớ không dám nói trực tiếp vì sợ cậu ngại… nhưng hôm nay tớ muốn nói thật:
+
+Tớ thích cậu — thích rất nhiều.
+
+Cậu cho tớ một cơ hội để được quan tâm và làm cậu vui mỗi ngày được không? ❤️`;
+
+startBtn.onclick = function(){
+    startBtn.style.display="none";
+    loveText.style.display="block";
+    typeWriter(loveMessage, loveContent, 0, nextBtn);
+};
+
+// Hiệu ứng đánh máy từng ký tự
+function typeWriter(text, element, i, btn){
+    if(i < text.length){
+        element.innerHTML += text.charAt(i)=='\n' ? '<br>' : text.charAt(i);
+        i++;
+        setTimeout(function(){ typeWriter(text, element, i, btn); }, 40);
+    } else {
+        btn.style.display="inline-block"; // hiện nút tiếp tục khi gõ xong
+    }
+}
+
+// Hiện popup câu hỏi
+function showPopup(){
+    document.getElementById("popup").style.display="block";
+}
+
+// Trái tim rơi + popup thông báo + background trái tim rung rung
+function heartRain(){
+    // Trái tim rơi
+    for(let i=0;i<20;i++){
+        let h=document.createElement("div");
+        h.classList.add("heart");
+        h.innerHTML="❤️";
+        h.style.left=Math.random()*100+"vw";
+        h.style.animationDuration=(2+Math.random()*2)+"s";
+        document.body.appendChild(h);
+        setTimeout(()=>h.remove(),4000);
+    }
+
+    // Hiện popup thông báo đồng ý
+    const success = document.getElementById("successPopup");
+    success.style.display="block";
+
+    // Tạo nền trái tim rung rung
+    const bg = document.getElementById("bgHeart");
+    bg.innerHTML=""; // reset
+    for(let i=0;i<50;i++){
+        let bh=document.createElement("div");
+        bh.classList.add("bg-heart");
+        bh.innerHTML="❤️";
+        bh.style.top=Math.random()*100+"%";
+        bh.style.left=Math.random()*100+"%";
+        bh.style.fontSize=(15+Math.random()*25)+"px";
+        bh.style.animationDuration=(0.5 + Math.random()*0.5) + "s";
+        bg.appendChild(bh);
+    }
+}
+</script>
+
+</body>
+</html>
